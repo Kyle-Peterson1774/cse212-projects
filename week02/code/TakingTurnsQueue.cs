@@ -7,7 +7,15 @@
 /// less than they will stay in the queue forever.  If a person is out of turns then they will 
 /// not be added back into the queue.
 /// </summary>
-public class TakingTurnsQueue
+public interface ITakingTurnsQueue
+{
+    int Length { get; }
+
+    void AddPerson(string name, int turns);
+    Person GetNextPerson();
+}
+
+public class TakingTurnsQueue : ITakingTurnsQueue
 {
     private readonly PersonQueue _people = new();
 
@@ -37,21 +45,24 @@ public class TakingTurnsQueue
         {
             throw new InvalidOperationException("No one in the queue.");
         }
-        else
-        {
-            Person person = _people.Dequeue();
-            if (person.Turns > 1)
-            {
-                person.Turns -= 1;
-                _people.Enqueue(person);
-            }
 
+        Person person = _people.Dequeue();
+
+        // fixed: Infinite turns: 0 or less would mean they always go back in.
+        if (person.Turns <= 0)
+        {
+            _people.Enqueue(person);
             return person;
         }
-    }
 
-    public override string ToString()
-    {
-        return _people.ToString();
+        // fixed: Using a turn, then re-enqueue only if they still have turns left.
+        person.Turns -= 1;
+
+        if (person.Turns > 0)
+        {
+            _people.Enqueue(person);
+        }
+
+        return person;
     }
 }

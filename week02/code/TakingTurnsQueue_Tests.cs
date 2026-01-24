@@ -82,10 +82,11 @@ public class TakingTurnsQueueTests
     }
 
     [TestMethod]
-    // Scenario: Create a queue with the following people and turns: Bob (2), Tim (Forever), Sue (3)
-    // Run 10 times.
+    // Scenario: Create a queue with the following people and turns: Bob (2), Tim (Forever), Sue (3) and
+    // Run until the queue is empty.
     // Expected Result: Bob, Tim, Sue, Bob, Tim, Sue, Tim, Sue, Tim, Tim
-    // Defect(s) Found: 
+    // Defect(s) Found: People with infinite turn (0 of less) were not re-queued.
+    // Turns were not executed correctly when Turns == 1
     public void TestTakingTurnsQueue_ForeverZero()
     {
         var timTurns = 0;
